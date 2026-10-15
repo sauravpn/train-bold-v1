@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Zap, Menu, X, Database } from 'lucide-react';
-import { getWaitlistEmails } from '../lib/storage';
+import { getLocalWaitlistEmails } from '../lib/storage';
 
 interface HeaderProps {
   onOpenWaitlistAdmin: () => void;
@@ -17,7 +17,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenWaitlistAdmin, onOpenAchie
       setScrolled(window.scrollY > 20);
     };
     window.addEventListener('scroll', handleScroll);
-    setWaitlistCount(getWaitlistEmails().length);
+    setWaitlistCount(getLocalWaitlistEmails().length);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 

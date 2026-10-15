@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Download, Trash2, Database, Mail, Calendar, Sparkles } from 'lucide-react';
-import { getWaitlistEmails, exportWaitlistCSV, exportWaitlistJSON } from '../lib/storage';
+import { fetchRemoteWaitlist, exportWaitlistCSV, exportWaitlistJSON } from '../lib/storage';
+import { isSupabaseConfigured } from '../lib/supabase';
 import { WaitlistEntry } from '../types';
 
 interface WaitlistDrawerProps {
@@ -15,10 +16,14 @@ export const WaitlistDrawer: React.FC<WaitlistDrawerProps> = ({
   triggerRefresh,
 }) => {
   const [entries, setEntries] = useState<WaitlistEntry[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      setEntries(getWaitlistEmails());
+      setLoading(true);
+      fetchRemoteWaitlist()
+        .then((data) => setEntries(data))
+        .finally(() => setLoading(false));
     }
   }, [isOpen, triggerRefresh]);
 
@@ -43,8 +48,12 @@ export const WaitlistDrawer: React.FC<WaitlistDrawerProps> = ({
               <h3 className="font-display font-black text-xl uppercase tracking-tight text-foreground">
                 EARLY-ACCESS WAITLIST DB
               </h3>
-              <p className="text-[10px] font-mono text-foreground-muted">
-                {entries.length} ATHLETES REGISTERED (LOCAL STORAGE)
+              <p className="text-[10px] font-mono text-foreground-muted flex items-center gap-1.5">
+                <span>{entries.length} ATHLETES REGISTERED</span>
+                <span className="text-surface-border">|</span>
+                <span className={isSupabaseConfigured ? 'text-primary font-bold' : 'text-foreground-subtle'}>
+                  {isSupabaseConfigured ? '● SUPABASE CONNECTED' : '○ LOCAL STORAGE'}
+                </span>
               </p>
             </div>
           </div>
@@ -59,7 +68,7 @@ export const WaitlistDrawer: React.FC<WaitlistDrawerProps> = ({
         {/* Action Controls */}
         <div className="flex items-center gap-2 mb-6">
           <button
-            onClick={exportWaitlistCSV}
+            onClick={() => exportWaitlistCSV(entries)}
             disabled={entries.length === 0}
             className="flex-1 py-2 px-3 rounded bg-primary text-background font-mono text-xs uppercase font-bold hover:bg-primary-hover disabled:opacity-40 disabled:pointer-events-none flex items-center justify-center gap-1.5 transition-all"
           >
@@ -67,7 +76,7 @@ export const WaitlistDrawer: React.FC<WaitlistDrawerProps> = ({
             <span>Export CSV</span>
           </button>
           <button
-            onClick={exportWaitlistJSON}
+            onClick={() => exportWaitlistJSON(entries)}
             disabled={entries.length === 0}
             className="flex-1 py-2 px-3 rounded bg-surface-raised border border-surface-border text-foreground font-mono text-xs uppercase font-semibold hover:border-primary disabled:opacity-40 disabled:pointer-events-none flex items-center justify-center gap-1.5 transition-all"
           >
@@ -86,7 +95,14 @@ export const WaitlistDrawer: React.FC<WaitlistDrawerProps> = ({
 
         {/* Entries List */}
         <div className="flex-1 overflow-y-auto space-y-2.5 pr-1">
-          {entries.length === 0 ? (
+          {loading ? (
+            <div className="text-center py-16 text-foreground-subtle">
+              <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin mx-auto mb-3" />
+              <p className="font-mono text-xs uppercase tracking-wider text-foreground-muted">
+                Syncing with Database...
+              </p>
+            </div>
+          ) : entries.length === 0 ? (
             <div className="text-center py-16 text-foreground-subtle">
               <Mail className="w-10 h-10 mx-auto mb-3 opacity-30 text-primary" />
               <p className="font-mono text-xs uppercase tracking-wider text-foreground-muted">

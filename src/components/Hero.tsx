@@ -15,13 +15,13 @@ export const Hero: React.FC<HeroProps> = ({ onSignupSuccess }) => {
 
   const sports = ['HYROX', 'Marathon', 'Ironman 70.3', 'Triathlon', 'Ultra'];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
 
     setStatus('loading');
-    setTimeout(() => {
-      const result = saveWaitlistEmail(email, selectedSport);
+    try {
+      const result = await saveWaitlistEmail(email, selectedSport);
       if (result.success) {
         setStatus('success');
         setFeedbackMessage(result.message);
@@ -36,7 +36,10 @@ export const Hero: React.FC<HeroProps> = ({ onSignupSuccess }) => {
         setStatus('error');
         setFeedbackMessage(result.message);
       }
-    }, 400);
+    } catch {
+      setStatus('error');
+      setFeedbackMessage('Something went wrong. Please try again.');
+    }
   };
 
   return (

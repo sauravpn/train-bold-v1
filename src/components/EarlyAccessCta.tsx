@@ -15,13 +15,13 @@ export const EarlyAccessCta: React.FC<EarlyAccessCtaProps> = ({ onSignupSuccess 
 
   const sports = ['HYROX', 'Marathon', 'Ironman 70.3', 'Triathlon', 'Trail / Ultra'];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
 
     setStatus('loading');
-    setTimeout(() => {
-      const res = saveWaitlistEmail(email, sport);
+    try {
+      const res = await saveWaitlistEmail(email, sport);
       if (res.success) {
         setStatus('success');
         setMessage(res.message);
@@ -36,7 +36,10 @@ export const EarlyAccessCta: React.FC<EarlyAccessCtaProps> = ({ onSignupSuccess 
         setStatus('error');
         setMessage(res.message);
       }
-    }, 400);
+    } catch {
+      setStatus('error');
+      setMessage('Something went wrong. Please try again.');
+    }
   };
 
   return (
