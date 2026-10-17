@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { Ticker } from './components/Ticker';
@@ -12,14 +12,41 @@ import { EarlyAccessCta } from './components/EarlyAccessCta';
 import { Footer } from './components/Footer';
 import { AchievementCardModal } from './components/AchievementCardModal';
 import { WaitlistDrawer } from './components/WaitlistDrawer';
+import { DashboardApp } from './components/DashboardApp';
 import { CampaignData } from './types';
 import { CAMPAIGNS } from './data/mockData';
 
 export function App() {
+  const [view, setView] = useState<'landing' | 'app'>('landing');
   const [waitlistAdminOpen, setWaitlistAdminOpen] = useState(false);
   const [achievementModalOpen, setAchievementModalOpen] = useState(false);
   const [selectedCampaignForCard, setSelectedCampaignForCard] = useState<CampaignData | null>(CAMPAIGNS[0]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  // Sync hash routing if user loads with #app
+  useEffect(() => {
+    if (window.location.hash === '#app') {
+      setView('app');
+    }
+    const handleHash = () => {
+      if (window.location.hash === '#app') setView('app');
+      else if (window.location.hash === '' || window.location.hash === '#') setView('landing');
+    };
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, []);
+
+  const handleLaunchApp = () => {
+    window.location.hash = 'app';
+    setView('app');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleBackToLanding = () => {
+    window.location.hash = '';
+    setView('landing');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const handleSignupSuccess = () => {
     setRefreshTrigger((prev) => prev + 1);
@@ -30,6 +57,12 @@ export function App() {
     setAchievementModalOpen(true);
   };
 
+  // If in full interactive app mode (Runna-style terminal)
+  if (view === 'app') {
+    return <DashboardApp onBackToLanding={handleBackToLanding} />;
+  }
+
+  // Public Landing Page
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col selection:bg-primary selection:text-background font-sans">
       {/* Fixed Navigation Header */}
@@ -39,6 +72,7 @@ export function App() {
           setSelectedCampaignForCard(CAMPAIGNS[0]);
           setAchievementModalOpen(true);
         }}
+        onLaunchApp={handleLaunchApp}
       />
 
       {/* Main Page Flow following PRD 6.3 */}

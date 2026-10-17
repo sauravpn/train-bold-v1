@@ -151,16 +151,23 @@ export const Hero: React.FC<HeroProps> = ({ onSignupSuccess }) => {
               )}
 
               {/* Credibility statement without fake counters */}
-              <div className="mt-4 flex items-center gap-4 text-xs text-foreground-subtle font-mono">
+              <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-foreground-subtle font-mono">
                 <span className="flex items-center gap-1.5">
                   <ShieldCheck className="w-3.5 h-3.5 text-primary" />
-                  No spam. Pre-launch invites only.
+                  Encrypted telemetry
                 </span>
                 <span className="hidden sm:inline text-surface-border">|</span>
                 <span className="flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-primary" />
-                  Free founder access tier
+                  Free founder tier
                 </span>
+                <span className="hidden sm:inline text-surface-border">|</span>
+                <a
+                  href="#app"
+                  className="text-primary hover:underline font-bold flex items-center gap-1 uppercase tracking-wider"
+                >
+                  <span>Launch Live App Terminal →</span>
+                </a>
               </div>
             </div>
 

@@ -5,9 +5,14 @@ import { getLocalWaitlistEmails } from '../lib/storage';
 interface HeaderProps {
   onOpenWaitlistAdmin: () => void;
   onOpenAchievementModal: () => void;
+  onLaunchApp: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onOpenWaitlistAdmin, onOpenAchievementModal }) => {
+export const Header: React.FC<HeaderProps> = ({
+  onOpenWaitlistAdmin,
+  onOpenAchievementModal,
+  onLaunchApp,
+}) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [waitlistCount, setWaitlistCount] = useState(0);
@@ -31,6 +36,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenWaitlistAdmin, onOpenAchie
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
+          
           {/* Brand Mark */}
           <a href="#" className="flex items-center gap-2 group">
             <div className="w-8 h-8 rounded bg-primary text-background flex items-center justify-center font-display font-black text-xl tracking-tighter group-hover:scale-105 transition-transform">
@@ -53,7 +59,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenWaitlistAdmin, onOpenAchie
               Platform Pillars
             </a>
             <a href="#dashboard-preview" className="hover:text-primary transition-colors uppercase tracking-wider text-xs">
-              Live Terminal Preview
+              Terminal Preview
             </a>
             <a href="#how-it-works" className="hover:text-primary transition-colors uppercase tracking-wider text-xs">
               How It Works
@@ -69,11 +75,10 @@ export const Header: React.FC<HeaderProps> = ({ onOpenWaitlistAdmin, onOpenAchie
 
           {/* Action CTAs */}
           <div className="hidden md:flex items-center gap-3">
-            {/* Discreet Waitlist Counter / Admin button */}
             <button
               onClick={onOpenWaitlistAdmin}
-              title="View captured early access list (Local Storage)"
-              className="px-2.5 py-1.5 rounded bg-surface border border-surface-border text-foreground-muted hover:text-foreground hover:border-surface-borderLight text-xs font-mono flex items-center gap-1.5 transition-all"
+              title="View waitlist list"
+              className="px-2.5 py-1.5 rounded bg-surface border border-surface-border text-foreground-muted hover:text-foreground text-xs font-mono flex items-center gap-1.5"
             >
               <Database className="w-3.5 h-3.5 text-primary" />
               <span>Waitlist</span>
@@ -84,17 +89,24 @@ export const Header: React.FC<HeaderProps> = ({ onOpenWaitlistAdmin, onOpenAchie
               )}
             </button>
 
-            {/* Early Access CTA Anchor */}
-            <a
-              href="#early-access"
-              className="px-4 py-2 rounded bg-primary text-background font-display font-bold uppercase tracking-wider text-sm hover:bg-primary-hover hover:shadow-[0_0_20px_rgba(194,248,53,0.35)] transition-all flex items-center gap-1.5"
+            {/* Launch App Button */}
+            <button
+              onClick={onLaunchApp}
+              className="px-4 py-2 rounded bg-primary text-background font-display font-black uppercase tracking-wider text-sm hover:bg-primary-hover hover:shadow-[0_0_20px_rgba(194,248,53,0.35)] transition-all flex items-center gap-1.5"
             >
-              <span>Get Early Access</span>
-            </a>
+              <Zap className="w-4 h-4 fill-background" />
+              <span>Launch App</span>
+            </button>
           </div>
 
           {/* Mobile Menu Toggle */}
           <div className="flex md:hidden items-center gap-2">
+            <button
+              onClick={onLaunchApp}
+              className="px-2.5 py-1 rounded bg-primary text-background font-mono text-xs font-bold uppercase"
+            >
+              App
+            </button>
             <button
               onClick={onOpenWaitlistAdmin}
               className="p-2 rounded bg-surface border border-surface-border text-foreground-muted hover:text-foreground"
@@ -109,11 +121,23 @@ export const Header: React.FC<HeaderProps> = ({ onOpenWaitlistAdmin, onOpenAchie
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
+
         </div>
 
         {/* Mobile Dropdown */}
         {mobileMenuOpen && (
           <div className="md:hidden mt-3 p-4 rounded-lg bg-surface-raised border border-surface-border flex flex-col gap-3 animate-in fade-in slide-in-from-top-2">
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                onLaunchApp();
+              }}
+              className="w-full text-center py-2.5 rounded bg-primary text-background font-display font-black uppercase tracking-wider text-sm flex items-center justify-center gap-1.5"
+            >
+              <Zap className="w-4 h-4 fill-background" />
+              <span>Launch Training App</span>
+            </button>
+
             <a
               href="#features"
               onClick={() => setMobileMenuOpen(false)}
@@ -145,15 +169,6 @@ export const Header: React.FC<HeaderProps> = ({ onOpenWaitlistAdmin, onOpenAchie
               <Zap className="w-4 h-4 text-primary" />
               PR Card Creator
             </button>
-            <div className="pt-2 border-t border-surface-border">
-              <a
-                href="#early-access"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center block px-4 py-2.5 rounded bg-primary text-background font-display font-bold uppercase tracking-wider text-sm"
-              >
-                Get Early Access
-              </a>
-            </div>
           </div>
         )}
       </div>
